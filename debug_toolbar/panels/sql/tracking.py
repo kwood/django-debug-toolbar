@@ -217,7 +217,7 @@ class NormalCursorWrapper(BaseCursorWrapper):
                 params.update(
                     {
                         "trans_id": trans_id,
-                        "trans_status": conn.get_transaction_status() if hasattr(conn, 'get_transaction_status') else conn.pgconn.get_transaction_status(),
+                        "trans_status": conn.get_transaction_status() if hasattr(conn, 'get_transaction_status') else conn.pgconn.transaction_status,
                         "iso_level": iso_level,
                     }
                 )
