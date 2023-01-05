@@ -17,15 +17,26 @@ from debug_toolbar.utils import render_stacktrace
 
 def get_isolation_level_display(vendor, level):
     if vendor == "postgresql":
-        import psycopg2.extensions
+        try:
+            import psycopg2.extensions
 
-        choices = {
-            psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT: _("Autocommit"),
-            psycopg2.extensions.ISOLATION_LEVEL_READ_UNCOMMITTED: _("Read uncommitted"),
-            psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED: _("Read committed"),
-            psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ: _("Repeatable read"),
-            psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE: _("Serializable"),
-        }
+            choices = {
+                psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT: _("Autocommit"),
+                psycopg2.extensions.ISOLATION_LEVEL_READ_UNCOMMITTED: _("Read uncommitted"),
+                psycopg2.extensions.ISOLATION_LEVEL_READ_COMMITTED: _("Read committed"),
+                psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ: _("Repeatable read"),
+                psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE: _("Serializable"),
+            }
+        except ImportError:
+            import psycopg
+
+            enum = psycopg.IsolationLevel
+            choices = {
+                enum.READ_UNCOMMITTED: _("Read uncommitted"),
+                enum.READ_COMMITTED: _("Read committed"),
+                enum.REPEATABLE_READ: _("Repeatable read"),
+                enum.SERIALIZABLE: _("Serializable")
+            }
     else:
         raise ValueError(vendor)
     return choices.get(level)
@@ -33,15 +44,26 @@ def get_isolation_level_display(vendor, level):
 
 def get_transaction_status_display(vendor, level):
     if vendor == "postgresql":
-        import psycopg2.extensions
+        try:
+            import psycopg2.extensions
 
-        choices = {
-            psycopg2.extensions.TRANSACTION_STATUS_IDLE: _("Idle"),
-            psycopg2.extensions.TRANSACTION_STATUS_ACTIVE: _("Active"),
-            psycopg2.extensions.TRANSACTION_STATUS_INTRANS: _("In transaction"),
-            psycopg2.extensions.TRANSACTION_STATUS_INERROR: _("In error"),
-            psycopg2.extensions.TRANSACTION_STATUS_UNKNOWN: _("Unknown"),
-        }
+            choices = {
+                psycopg2.extensions.TRANSACTION_STATUS_IDLE: _("Idle"),
+                psycopg2.extensions.TRANSACTION_STATUS_ACTIVE: _("Active"),
+                psycopg2.extensions.TRANSACTION_STATUS_INTRANS: _("In transaction"),
+                psycopg2.extensions.TRANSACTION_STATUS_INERROR: _("In error"),
+                psycopg2.extensions.TRANSACTION_STATUS_UNKNOWN: _("Unknown"),
+            }
+        except ImportError:
+            import psycopg
+            enum = psycopg.pq.TransactionStatus
+            choices = {
+                enum.IDLE: _("Idle"),
+                enum.ACTIVE: _("Active"),
+                enum.INTRANS: _("In transaction"),
+                enum.INERROR: _("In error"),
+                enum.UNKNOWN: _("Unknown"),
+            }
     else:
         raise ValueError(vendor)
     return choices.get(level)
